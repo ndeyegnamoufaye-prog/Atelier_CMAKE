@@ -1,14 +1,73 @@
-  Test_Add:
+name: tests
+
+on: push
+
+jobs:
+
+  Compilation:
     runs-on: ubuntu-latest
-    needs: Compilation
     steps:
-      - name: Test fonction add
+      - uses: actions/checkout@v3
+      - name: Compilation
         run: |
-          last_directory=$(basename ${{ runner.workspace }})
-          git clone https://github.com/${{ github.repository }}.git
-          cd ./$last_directory
           mkdir build
           cd build
           cmake ..
           make
-          ./src/calculator add 10 5
+
+  Test_Add:
+    needs: Compilation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Test Add
+        run: |
+          mkdir build && cd build && cmake .. && make
+          ctest -R test_add --output-on-failure
+
+  Test_Sub:
+    needs: Compilation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Test Sub
+        run: |
+          mkdir build && cd build && cmake .. && make
+          ctest -R test_sub --output-on-failure
+
+  Test_Mul:
+    needs: Compilation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Test Mul
+        run: |
+          mkdir build && cd build && cmake .. && make
+          ctest -R test_mul --output-on-failure
+
+  Test_Div:
+    needs: Compilation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Test Div
+        run: |
+          mkdir build && cd build && cmake .. && make
+          ctest -R test_div --output-on-failure
+
+  Test_car:
+    needs: Compilation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Test Car
+        run: |
+          mkdir build && cd build && cmake .. && make
+          ctest -R test_car --output-on-failure
+
+  Deployment:
+    needs: [Test_Add, Test_Sub, Test_Mul, Test_Div, Test_car]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy
+        run: echo "Déploiement de la solution"
